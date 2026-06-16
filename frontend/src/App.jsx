@@ -69,20 +69,25 @@ function App() {
     return res
   }, [refreshAccessToken])
 
-  // Check if logged in on mount only
+  function navigateTo(newPage) {
+    setPage(newPage)
+    setMsg("")
+    setOtp("")
+  }
+
   useEffect(() => {
     if (!hasCheckedAuth.current) {
       hasCheckedAuth.current = true
-      if (token && !user) getMe()
+      if (token) getMe()
     }
-  })
+  }, [])
 
   async function getMe() {
     const res = await apiCall(`${API}/me`)
     if (res.ok) {
       const data = await res.json()
       setUser(data)
-      setPage("dashboard")
+      navigateTo("dashboard")
     } else {
       logout()
     }
@@ -109,7 +114,7 @@ function App() {
     const data = await res.json()
     if (res.ok) {
       setMsg("OTP sent to your email. Enter it to verify.")
-      setPage("verify-register")
+      navigateTo("verify-register")
     } else {
       setMsg(data.detail)
     }
@@ -124,7 +129,7 @@ function App() {
     const data = await res.json()
     if (res.ok) {
       setMsg("Account verified! Now login")
-      setPage("login")
+      navigateTo("login")
     } else {
       setMsg(data.detail)
     }
@@ -142,7 +147,7 @@ function App() {
       localStorage.setItem("refresh_token", data.refresh_token)
       setToken(data.access_token)
       setUser(data.user)
-      setPage("dashboard")
+      navigateTo("dashboard")
     } else {
       setMsg(data.detail)
     }
@@ -153,7 +158,7 @@ function App() {
     localStorage.removeItem("refresh_token")
     setToken(null)
     setUser(null)
-    setPage("login")
+    navigateTo("login")
   }
 
   async function forgotPassword() {
@@ -165,7 +170,7 @@ function App() {
     const data = await res.json()
     if (res.ok) {
       setMsg("OTP sent to your email")
-      setPage("verify-forgot")
+      navigateTo("verify-forgot")
     } else {
       setMsg(data.detail)
     }
@@ -180,7 +185,7 @@ function App() {
     const data = await res.json()
     if (res.ok) {
       setMsg("Password reset successful!")
-      setPage("login")
+      navigateTo("login")
     } else {
       setMsg(data.detail)
     }
@@ -195,8 +200,8 @@ function App() {
           <input name="username" id="username" autoComplete="username" placeholder="Username or Email" onChange={e => setForm({...form, username: e.target.value})} />
           <input name="password" id="password" type="password" autoComplete="current-password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={login}>Login</button>
-          <p className="link" onClick={() => {setPage("register"); setMsg("")}}>No account? Register</p>
-          <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Forgot password?</p>
+          <p className="link" onClick={() => navigateTo("register")}>No account? Register</p>
+          <p className="link" onClick={() => navigateTo("forgot-password")}>Forgot password?</p>
         </div>
       )}
 
@@ -208,7 +213,7 @@ function App() {
           <input name="email" id="reg-email" type="email" autoComplete="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
           <input name="password" id="reg-password" type="password" autoComplete="new-password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={register}>Register</button>
-          <p className="link" onClick={() => {setPage("login"); setMsg("")}}>Have account? Login</p>
+          <p className="link" onClick={() => navigateTo("login")}>Have account? Login</p>
         </div>
       )}
 
@@ -238,7 +243,7 @@ function App() {
           {msg && <p className="msg">{msg}</p>}
           <input name="email" id="forgot-email" type="email" autoComplete="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
           <button onClick={forgotPassword}>Send OTP</button>
-          <p className="link" onClick={() => {setPage("login"); setMsg("")}}>Back to Login</p>
+          <p className="link" onClick={() => navigateTo("login")}>Back to Login</p>
         </div>
       )}
 
@@ -250,7 +255,7 @@ function App() {
           <input name="otp" id="verify-forgot-otp" autoComplete="one-time-code" placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
           <input name="password" id="new-password" type="password" autoComplete="new-password" placeholder="New Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={verifyForgotOtp}>Reset Password</button>
-          <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Back</p>
+          <p className="link" onClick={() => navigateTo("forgot-password")}>Back</p>
         </div>
       )}
 
