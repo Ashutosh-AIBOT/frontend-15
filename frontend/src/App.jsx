@@ -141,13 +141,8 @@ function App() {
       localStorage.setItem("access_token", data.access_token)
       localStorage.setItem("refresh_token", data.refresh_token)
       setToken(data.access_token)
-      // Call getMe to load user and redirect
-      const meRes = await apiCall(`${API}/me`)
-      if (meRes.ok) {
-        const userData = await meRes.json()
-        setUser(userData)
-        setPage("dashboard")
-      }
+      setUser(data.user)
+      setPage("dashboard")
     } else {
       setMsg(data.detail)
     }
