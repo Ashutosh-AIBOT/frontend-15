@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: DB_DIR
+        value: /app/data
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://frontend-15-two.vercel.app,http://localhost:5174
+    healthCheckPath: /docs
+
+  - type: web
+    name: frontend
+    runtime: static
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: backend
+          property: url
+    buildCommand: cd frontend && npm install && npm run build
