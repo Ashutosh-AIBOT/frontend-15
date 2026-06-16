@@ -197,8 +197,8 @@ function App() {
         <div className="card">
           <h2>Login</h2>
           {msg && <p className="msg">{msg}</p>}
-          <input name="username" id="username" placeholder="Username or Email" onChange={e => setForm({...form, username: e.target.value})} />
-          <input name="password" id="password" type="password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
+          <input name="username" id="username" autoComplete="username" placeholder="Username or Email" onChange={e => setForm({...form, username: e.target.value})} />
+          <input name="password" id="password" type="password" autoComplete="current-password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={login}>Login</button>
           <p className="link" onClick={() => {setPage("register"); setMsg("")}}>No account? Register</p>
           <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Forgot password?</p>
@@ -209,9 +209,9 @@ function App() {
         <div className="card">
           <h2>Register</h2>
           {msg && <p className="msg">{msg}</p>}
-          <input name="username" id="reg-username" placeholder="Username" onChange={e => setForm({...form, username: e.target.value})} />
-          <input name="email" id="reg-email" type="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
-          <input name="password" id="reg-password" type="password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
+          <input name="username" id="reg-username" autoComplete="username" placeholder="Username" onChange={e => setForm({...form, username: e.target.value})} />
+          <input name="email" id="reg-email" type="email" autoComplete="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+          <input name="password" id="reg-password" type="password" autoComplete="new-password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={register}>Register</button>
           <p className="link" onClick={() => {setPage("login"); setMsg("")}}>Have account? Login</p>
         </div>
@@ -232,7 +232,7 @@ function App() {
           <h2>Verify Account</h2>
           {msg && <p className="msg">{msg}</p>}
           <p>OTP sent to: {form.email}</p>
-          <input name="otp" id="verify-register-otp" placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
+          <input name="otp" id="verify-register-otp" autoComplete="one-time-code" placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
           <button onClick={verifyRegister}>Verify Account</button>
         </div>
       )}
@@ -241,7 +241,7 @@ function App() {
         <div className="card">
           <h2>Forgot Password</h2>
           {msg && <p className="msg">{msg}</p>}
-          <input name="email" id="forgot-email" type="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+          <input name="email" id="forgot-email" type="email" autoComplete="email" placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
           <button onClick={forgotPassword}>Send OTP</button>
           <p className="link" onClick={() => {setPage("login"); setMsg("")}}>Back to Login</p>
         </div>
@@ -252,8 +252,8 @@ function App() {
           <h2>Reset Password</h2>
           {msg && <p className="msg">{msg}</p>}
           <p>OTP sent to: {form.email}</p>
-          <input name="otp" id="verify-forgot-otp" placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
-          <input name="password" id="new-password" type="password" placeholder="New Password" onChange={e => setForm({...form, password: e.target.value})} />
+          <input name="otp" id="verify-forgot-otp" autoComplete="one-time-code" placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
+          <input name="password" id="new-password" type="password" autoComplete="new-password" placeholder="New Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={verifyForgotOtp}>Reset Password</button>
           <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Back</p>
         </div>
