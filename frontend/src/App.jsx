@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import "./App.css"
 
-const API = "http://localhost:7860"
+const API = "https://authsystem-practice-back.onrender.com"
 
 function App() {
   const [page, setPage] = useState("login")
