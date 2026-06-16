@@ -170,21 +170,21 @@ function App() {
     const data = await res.json()
     if (res.ok) {
       setMsg("OTP sent to your email")
-      setPage("reset-password")
+      setPage("verify-forgot")
     } else {
       setMsg(data.detail)
     }
   }
 
-  async function resetPassword() {
-    const res = await fetch(`${API}/auth/reset-password`, {
+  async function verifyForgotOtp() {
+    const res = await fetch(`${API}/auth/forgot-password/verify`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({email: form.email, otp: otp, new_password: form.password})
     })
     const data = await res.json()
     if (res.ok) {
-      setMsg("Password reset! Now login")
+      setMsg("Password reset successful!")
       setPage("login")
     } else {
       setMsg(data.detail)
@@ -247,13 +247,15 @@ function App() {
         </div>
       )}
 
-      {page === "reset-password" && (
+      {page === "verify-forgot" && (
         <div className="card">
           <h2>Reset Password</h2>
           {msg && <p className="msg">{msg}</p>}
-          <input placeholder="OTP Code" onChange={e => setOtp(e.target.value)} />
+          <p>OTP sent to: {form.email}</p>
+          <input placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
           <input type="password" placeholder="New Password" onChange={e => setForm({...form, password: e.target.value})} />
-          <button onClick={resetPassword}>Reset Password</button>
+          <button onClick={verifyForgotOtp}>Reset Password</button>
+          <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Back</p>
         </div>
       )}
 
