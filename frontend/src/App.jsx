@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import "./App.css"
 
-const API = "https://authsystem-practice-back.onrender.com"
+const API = import.meta.env.VITE_API_URL || "http://localhost:7860"
 
 function App() {
   const [page, setPage] = useState("login")
   const [token, setToken] = useState(localStorage.getItem("access_token"))
   const [user, setUser] = useState(null)
   const [form, setForm] = useState({username: "", email: "", password: ""})
+  const [otp, setOtp] = useState("")
   const [msg, setMsg] = useState("")
   const hasCheckedAuth = useRef(false)
 
@@ -88,6 +89,18 @@ function App() {
   }
 
   async function register() {
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(form.username)) {
+      setMsg("Username must be 3-20 chars, letters/numbers/underscores only")
+      return
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email)) {
+      setMsg("Invalid email format")
+      return
+    }
+    if (form.password.length < 6) {
+      setMsg("Password must be at least 6 characters")
+      return
+    }
     const res = await fetch(`${API}/auth/register`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
@@ -95,7 +108,22 @@ function App() {
     })
     const data = await res.json()
     if (res.ok) {
-      setMsg("Registered! Now login")
+      setMsg("OTP sent to your email. Enter it to verify.")
+      setPage("verify-register")
+    } else {
+      setMsg(data.detail)
+    }
+  }
+
+  async function verifyRegister() {
+    const res = await fetch(`${API}/auth/register/verify`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: form.email, otp: otp})
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setMsg("Account verified! Now login")
       setPage("login")
     } else {
       setMsg(data.detail)
@@ -133,16 +161,47 @@ function App() {
     setPage("login")
   }
 
+  async function forgotPassword() {
+    const res = await fetch(`${API}/auth/forgot-password`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: form.email})
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setMsg("OTP sent to your email")
+      setPage("reset-password")
+    } else {
+      setMsg(data.detail)
+    }
+  }
+
+  async function resetPassword() {
+    const res = await fetch(`${API}/auth/reset-password`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: form.email, otp: otp, new_password: form.password})
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setMsg("Password reset! Now login")
+      setPage("login")
+    } else {
+      setMsg(data.detail)
+    }
+  }
+
   return (
     <div className="container">
       {page === "login" && (
         <div className="card">
           <h2>Login</h2>
           {msg && <p className="msg">{msg}</p>}
-          <input placeholder="Username" onChange={e => setForm({...form, username: e.target.value})} />
+          <input placeholder="Username or Email" onChange={e => setForm({...form, username: e.target.value})} />
           <input type="password" placeholder="Password" onChange={e => setForm({...form, password: e.target.value})} />
           <button onClick={login}>Login</button>
           <p className="link" onClick={() => {setPage("register"); setMsg("")}}>No account? Register</p>
+          <p className="link" onClick={() => {setPage("forgot-password"); setMsg("")}}>Forgot password?</p>
         </div>
       )}
 
@@ -167,6 +226,37 @@ function App() {
           <button onClick={logout}>Logout</button>
         </div>
       )}
+
+      {page === "verify-register" && (
+        <div className="card">
+          <h2>Verify Account</h2>
+          {msg && <p className="msg">{msg}</p>}
+          <p>OTP sent to: {form.email}</p>
+          <input placeholder="Enter OTP Code" onChange={e => setOtp(e.target.value)} />
+          <button onClick={verifyRegister}>Verify Account</button>
+        </div>
+      )}
+
+      {page === "forgot-password" && (
+        <div className="card">
+          <h2>Forgot Password</h2>
+          {msg && <p className="msg">{msg}</p>}
+          <input placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+          <button onClick={forgotPassword}>Send OTP</button>
+          <p className="link" onClick={() => {setPage("login"); setMsg("")}}>Back to Login</p>
+        </div>
+      )}
+
+      {page === "reset-password" && (
+        <div className="card">
+          <h2>Reset Password</h2>
+          {msg && <p className="msg">{msg}</p>}
+          <input placeholder="OTP Code" onChange={e => setOtp(e.target.value)} />
+          <input type="password" placeholder="New Password" onChange={e => setForm({...form, password: e.target.value})} />
+          <button onClick={resetPassword}>Reset Password</button>
+        </div>
+      )}
+
     </div>
   )
 }
